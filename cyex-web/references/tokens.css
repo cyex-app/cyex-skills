@@ -1,0 +1,121 @@
+/* cyex web tokens: landing pages, product sites, the hub.
+   Ground and greys from the cyex hub; accent tokens from cyex-design (shared with every cyex surface).
+   Copy this block into the page's <style> (or app.css) and use only these values. */
+
+:root {
+  color-scheme: dark;
+
+  /* Ground: near-black, neutral greys. No cream or off-white in light. */
+  --bg: #08090c;
+  --surface: #101217;
+  --surface-2: #171a21;
+  --border: rgb(255 255 255 / .08);
+  --border-strong: rgb(255 255 255 / .16);
+  --text: #eceef3;
+  --muted: #9ba1ad;
+  --mark-ink: #e8e8ea;
+
+  /* Accent: --accent fills, --accent-text is the only accent allowed on text. */
+  --accent: #145aff;
+  --accent-2: #2a6aff;
+  --accent-text: #7ea4ff;
+  --accent-ink: #ffffff;
+  --accent-glow: rgb(20 90 255 / .35);
+
+  --shadow: 0 1px 0 rgb(255 255 255 / .04) inset, 0 40px 90px -40px rgb(0 0 0 / .9);
+
+  /* Type: Geist, three weights. */
+  --font: 'Geist', 'Geist Fallback', system-ui, 'Segoe UI', sans-serif;
+  --t-h1: clamp(46px, 8.4vw, 128px);
+  --t-h2: clamp(36px, 5vw, 68px);
+  --t-h2-band: clamp(30px, 3.6vw, 48px);
+  --t-h3-sub: clamp(26px, 2.8vw, 36px);
+  --t-h3: 19px;
+  --t-lead: clamp(18px, 1.5vw, 21px);
+  --t-body: 17px;
+  --t-ui: 15px;
+  --t-nav: 14px;
+  --t-small: 14px;
+  --t-fine: 13px;
+  --t-figure: clamp(30px, 3.4vw, 44px);
+  --t-count: clamp(44px, 6vw, 84px);
+
+  /* Shape: buttons and controls share the app's 3px corner; cards and mounts are larger. */
+  --radius-btn: 3px;
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 18px;
+  --radius-in: calc(var(--radius-l) - 8px); /* a picture's corner inside a mount */
+
+  /* Layout */
+  --gutter: clamp(18px, 4vw, 40px);
+  --page: min(1200px, 100% - 2 * var(--gutter));
+  --nav-h: 64px;
+  --section-pad: clamp(88px, 12vw, 168px);
+
+  /* Motion: one curve; press is quick, reveals are slow. */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --dur-press: .1s;
+  --dur-color: .2s;
+  --dur-hover: .25s;
+  --dur-move: .3s;
+  --dur-theme: .32s;
+  --dur-reveal: .9s;
+  --stagger: 70ms;
+  --press: .97;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #eef1f5;
+  --border: rgb(13 15 20 / .1);
+  --border-strong: rgb(13 15 20 / .2);
+  --text: #0d0f14;
+  --muted: #555b66;
+  --mark-ink: #1b1c20;
+
+  --accent: #14e6ff;
+  --accent-2: #10c9e6;
+  --accent-text: #046a82;
+  --accent-ink: #00232b;
+  --accent-glow: rgb(20 230 255 / .4);
+
+  --shadow: 0 40px 80px -40px rgb(13 15 20 / .3);
+}
+
+/* Arial sized to Geist per weight, so the font swap moves nothing (CLS 0). */
+@font-face { font-family: 'Geist Fallback'; font-weight: 400; src: local('Arial'), local('ArialMT'); size-adjust: 102.37%; ascent-override: 98.66%; descent-override: 29.31%; line-gap-override: 0%; }
+@font-face { font-family: 'Geist Fallback'; font-weight: 500; src: local('Arial'), local('ArialMT'); size-adjust: 104.72%; ascent-override: 96.45%; descent-override: 28.65%; line-gap-override: 0%; }
+@font-face { font-family: 'Geist Fallback'; font-weight: 600; src: local('Arial Bold'), local('Arial-BoldMT'); size-adjust: 99.7%; ascent-override: 100.71%; descent-override: 29.91%; line-gap-override: 0%; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); scroll-padding-top: calc(var(--nav-h) + 16px); -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0;
+  font: 400 var(--t-body)/1.6 var(--font);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-weight: 600; text-wrap: balance; margin: 0; }
+p, li, figcaption { text-wrap: pretty; }
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--accent-glow); }
+
+:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; border-radius: 4px; }
+[tabindex="-1"]:focus { outline: none; }
+
+.page { width: var(--page); margin-inline: auto; }
+.section { padding-top: var(--section-pad); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-theme); animation-timing-function: ease; }

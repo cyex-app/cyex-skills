@@ -1,0 +1,6 @@
+# Personal rules (accounts, names); appended to ~/.claude/CLAUDE.md by tools/install.ps1.
+session/personal.md
+# Third-party skills stay local; install them from their own repos.
+vendor/
+# Built zips for claude.ai; rebuild with tools/package-claude-ai.ps1.
+dist/

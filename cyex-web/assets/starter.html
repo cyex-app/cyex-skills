@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#08090c">
+<title>Page - cyex</title>
+<meta name="description" content="One plain sentence about this page.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>
+  (function () {
+    try { if (localStorage.getItem('cyexTheme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}
+    document.documentElement.classList.add('js');
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap"></noscript>
+<style>
+/* ---- tokens: a copy of cyex-web/references/tokens.css; keep them in step ---- */
+/* cyex web tokens: landing pages, product sites, the hub.
+   Ground and greys from the cyex hub; accent tokens from cyex-design (shared with every cyex surface).
+   Copy this block into the page's <style> (or app.css) and use only these values. */
+
+:root {
+  color-scheme: dark;
+
+  /* Ground: near-black, neutral greys. No cream or off-white in light. */
+  --bg: #08090c;
+  --surface: #101217;
+  --surface-2: #171a21;
+  --border: rgb(255 255 255 / .08);
+  --border-strong: rgb(255 255 255 / .16);
+  --text: #eceef3;
+  --muted: #9ba1ad;
+  --mark-ink: #e8e8ea;
+
+  /* Accent: --accent fills, --accent-text is the only accent allowed on text. */
+  --accent: #145aff;
+  --accent-2: #2a6aff;
+  --accent-text: #7ea4ff;
+  --accent-ink: #ffffff;
+  --accent-glow: rgb(20 90 255 / .35);
+
+  --shadow: 0 1px 0 rgb(255 255 255 / .04) inset, 0 40px 90px -40px rgb(0 0 0 / .9);
+
+  /* Type: Geist, three weights. */
+  --font: 'Geist', 'Geist Fallback', system-ui, 'Segoe UI', sans-serif;
+  --t-h1: clamp(46px, 8.4vw, 128px);
+  --t-h2: clamp(36px, 5vw, 68px);
+  --t-h2-band: clamp(30px, 3.6vw, 48px);
+  --t-h3-sub: clamp(26px, 2.8vw, 36px);
+  --t-h3: 19px;
+  --t-lead: clamp(18px, 1.5vw, 21px);
+  --t-body: 17px;
+  --t-ui: 15px;
+  --t-nav: 14px;
+  --t-small: 14px;
+  --t-fine: 13px;
+  --t-figure: clamp(30px, 3.4vw, 44px);
+  --t-count: clamp(44px, 6vw, 84px);
+
+  /* Shape: buttons and controls share the app's 3px corner; cards and mounts are larger. */
+  --radius-btn: 3px;
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 18px;
+  --radius-in: calc(var(--radius-l) - 8px); /* a picture's corner inside a mount */
+
+  /* Layout */
+  --gutter: clamp(18px, 4vw, 40px);
+  --page: min(1200px, 100% - 2 * var(--gutter));
+  --nav-h: 64px;
+  --section-pad: clamp(88px, 12vw, 168px);
+
+  /* Motion: one curve; press is quick, reveals are slow. */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --dur-press: .1s;
+  --dur-color: .2s;
+  --dur-hover: .25s;
+  --dur-move: .3s;
+  --dur-theme: .32s;
+  --dur-reveal: .9s;
+  --stagger: 70ms;
+  --press: .97;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #eef1f5;
+  --border: rgb(13 15 20 / .1);
+  --border-strong: rgb(13 15 20 / .2);
+  --text: #0d0f14;
+  --muted: #555b66;
+  --mark-ink: #1b1c20;
+
+  --accent: #14e6ff;
+  --accent-2: #10c9e6;
+  --accent-text: #046a82;
+  --accent-ink: #00232b;
+  --accent-glow: rgb(20 230 255 / .4);
+
+  --shadow: 0 40px 80px -40px rgb(13 15 20 / .3);
+}
+
+/* Arial sized to Geist per weight, so the font swap moves nothing (CLS 0). */
+@font-face { font-family: 'Geist Fallback'; font-weight: 400; src: local('Arial'), local('ArialMT'); size-adjust: 102.37%; ascent-override: 98.66%; descent-override: 29.31%; line-gap-override: 0%; }
+@font-face { font-family: 'Geist Fallback'; font-weight: 500; src: local('Arial'), local('ArialMT'); size-adjust: 104.72%; ascent-override: 96.45%; descent-override: 28.65%; line-gap-override: 0%; }
+@font-face { font-family: 'Geist Fallback'; font-weight: 600; src: local('Arial Bold'), local('Arial-BoldMT'); size-adjust: 99.7%; ascent-override: 100.71%; descent-override: 29.91%; line-gap-override: 0%; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); scroll-padding-top: calc(var(--nav-h) + 16px); -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  margin: 0;
+  font: 400 var(--t-body)/1.6 var(--font);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-weight: 600; text-wrap: balance; margin: 0; }
+p, li, figcaption { text-wrap: pretty; }
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--accent-glow); }
+
+:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; border-radius: 4px; }
+[tabindex="-1"]:focus { outline: none; }
+
+.page { width: var(--page); margin-inline: auto; }
+.section { padding-top: var(--section-pad); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-theme); animation-timing-function: ease; }
+
+/* ---- page ---- */
+.skip { position: fixed; left: 12px; top: -60px; z-index: 100; padding: 10px 16px; background: var(--text); color: var(--bg); border-radius: var(--radius-btn); font-size: var(--t-ui); }
+.skip:focus { top: 12px; }
+
+.nav { position: fixed; inset: 0 0 auto; z-index: 50; height: var(--nav-h); display: flex; align-items: center; gap: 28px; padding: 0 max(var(--gutter), (100% - 1200px) / 2); transition: background-color var(--dur-move); }
+.nav.scrolled { background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(14px) saturate(1.4); }
+.nav::after { content: ''; position: absolute; inset: 100% 0 auto; height: 18px; pointer-events: none; background: linear-gradient(color-mix(in srgb, var(--bg) 55%, transparent), transparent); opacity: 0; transition: opacity var(--dur-move); }
+.nav.scrolled::after { opacity: 1; }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .nav.scrolled { background: var(--bg); backdrop-filter: none; border-bottom: 1px solid var(--border-strong); } .nav::after { display: none; } }
+.brand { display: flex; align-items: center; gap: 9px; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.nav-links { margin-left: auto; display: flex; gap: 2px; }
+.nav-links a { padding: 8px 10px; font-size: var(--t-nav); color: var(--muted); border-radius: var(--radius-btn); transition: color var(--dur-color), transform var(--dur-press) ease-out; }
+.nav-links a:hover { color: var(--text); }
+.nav-links a:active { transform: scale(.96); }
+.nav-rule { width: 1px; height: 20px; background: var(--border-strong); }
+.toggle { display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-btn); background: transparent; color: var(--muted); cursor: pointer; transition: color var(--dur-hover), border-color var(--dur-hover), background-color var(--dur-hover), transform var(--dur-press) ease-out; }
+.toggle:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface-2); }
+.toggle:active { transform: scale(.94); }
+.toggle .sun, [data-theme="light"] .toggle .moon { display: none; }
+[data-theme="light"] .toggle .sun { display: block; }
+@media (max-width: 720px) { .nav-links, .nav-rule { display: none; } .toggle { margin-left: auto; } }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 48px; padding: 0 20px; border-radius: var(--radius-btn); font: 500 var(--t-ui)/1 var(--font); letter-spacing: -.005em; white-space: nowrap; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); transition: background-color var(--dur-hover), border-color var(--dur-hover), box-shadow var(--dur-hover), filter var(--dur-hover), transform var(--dur-press) ease-out; }
+.btn:hover { border-color: var(--muted); background: var(--surface-2); }
+.btn:active { transform: scale(var(--press)); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); box-shadow: 0 10px 30px -12px var(--accent-glow); }
+.btn-primary:hover { background: var(--accent); border-color: var(--accent); filter: brightness(1.08); box-shadow: 0 14px 40px -10px var(--accent-glow); }
+.btn .arrow { transition: transform var(--dur-move) var(--ease); }
+.btn:hover .arrow { transform: translateX(3px); }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+@media (max-width: 480px) { .actions { display: grid; } }
+
+.hero { padding: calc(var(--nav-h) + clamp(40px, 6vw, 96px)) 0 clamp(48px, 6vw, 72px); text-align: center; }
+.hero h1 { font-size: var(--t-h1); line-height: .98; letter-spacing: -.045em; max-width: 14ch; margin-inline: auto; }
+.hero .actions { justify-content: center; margin-top: 36px; }
+.hero .mount { margin-top: clamp(40px, 5vw, 64px); }
+
+.mount { padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-l); background: var(--surface); box-shadow: var(--shadow); }
+.mount > img, .mount .shot { width: 100%; border-radius: var(--radius-in); }
+.mount > img { display: block; height: auto; }
+.shot { aspect-ratio: 16 / 9; background: var(--surface-2); display: grid; place-items: center; color: var(--muted); font-size: var(--t-small); }
+
+.kicker { display: flex; align-items: center; gap: 10px; margin: 0 0 22px; font-size: var(--t-ui); font-weight: 500; color: var(--muted); }
+.head h2 { font-size: var(--t-h2); line-height: 1.02; letter-spacing: -.04em; max-width: 16ch; }
+.lead { margin: 20px 0 0; font-size: var(--t-lead); line-height: 1.55; color: var(--muted); max-width: 44ch; }
+.head .actions { margin-top: 32px; }
+.link { color: var(--accent-text); font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.link .arrow { transition: transform var(--dur-move) var(--ease); }
+.link:hover .arrow { transform: translateX(3px); }
+
+.pair { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 40px 72px; align-items: center; }
+@media (max-width: 900px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: clamp(40px, 5vw, 64px); }
+.steps > div { border-top: 1px solid var(--border-strong); padding-top: 20px; }
+.steps h3 { font-size: var(--t-h3); line-height: 1.3; letter-spacing: -.015em; }
+.steps p { margin: 8px 0 0; font-size: 16px; color: var(--muted); }
+@media (max-width: 900px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+
+.band { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px 40px; padding: clamp(32px, 5vw, 56px); border-radius: var(--radius-l); border: 1px solid var(--border); background: radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%), var(--surface); }
+.band h2 { font-size: var(--t-h2-band); line-height: 1.1; letter-spacing: -.03em; }
+.band p { margin: 10px 0 0; color: var(--muted); }
+
+.footer { border-top: 1px solid var(--border); margin-top: var(--section-pad); }
+.footer .top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; padding: 40px 0 32px; }
+.footer .links { display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 14.5px; color: var(--muted); }
+.footer .links a:hover { color: var(--text); }
+.footer .base { border-top: 1px solid var(--border); padding: 20px 0 36px; font-size: var(--t-fine); color: var(--muted); }
+.footer .base p { margin: 0; }
+
+.js [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity var(--dur-reveal) var(--ease), transform var(--dur-reveal) var(--ease); transition-delay: var(--reveal-delay, 0ms); }
+.js [data-reveal].in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .js [data-reveal] { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <a class="brand" href="https://cyex.app">
+    <svg viewBox="3 5 25 22" width="22" height="19" aria-hidden="true"><rect x="3" y="5" width="15" height="6" fill="var(--mark-ink)"/><rect x="10" y="13" width="18" height="6" fill="var(--accent)"/><rect x="3" y="21" width="15" height="6" fill="var(--mark-ink)"/></svg>
+    cyex
+  </a>
+  <nav class="nav-links" aria-label="Sections">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#get">Download</a>
+  </nav>
+  <span class="nav-rule" aria-hidden="true"></span>
+  <button class="toggle" id="theme" type="button" aria-label="Switch theme">
+    <svg class="moon" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 12.3A7 7 0 0 1 7.7 3.5a7 7 0 1 0 8.8 8.8Z"/></svg>
+    <svg class="sun" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.5v2M10 16.5v2M1.5 10h2M16.5 10h2M4 4l1.4 1.4M14.6 14.6 16 16M4 16l1.4-1.4M14.6 5.4 16 4"/></svg>
+  </button>
+</header>
+
+<main id="main" tabindex="-1">
+  <section class="hero page">
+    <h1>A short headline about the thing</h1>
+    <div class="actions">
+      <a class="btn btn-primary" href="#get">Download for Windows</a>
+      <a class="btn" href="#features">See what it does <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    </div>
+    <div class="mount"><div class="shot">Real screenshot here (-dark and -light)</div></div>
+  </section>
+
+  <section class="section page" id="features">
+    <div class="pair">
+      <header class="head" data-reveal>
+        <p class="kicker"><svg viewBox="3 5 25 22" width="18" height="16" aria-hidden="true"><rect x="3" y="5" width="15" height="6" fill="var(--border-strong)"/><rect x="10" y="13" width="18" height="6" fill="var(--accent)"/><rect x="3" y="21" width="15" height="6" fill="var(--border-strong)"/></svg>Section name</p>
+        <h2>One clear claim, in a sentence.</h2>
+        <p class="lead">A concrete line that says what it does and for whom, checked against the product.</p>
+        <div class="actions"><a class="link" href="#">Read more <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></div>
+      </header>
+      <div class="mount" data-reveal style="--reveal-delay: 80ms"><div class="shot">Screenshot</div></div>
+    </div>
+  </section>
+
+  <section class="section page" id="how">
+    <header class="head" data-reveal><h2>How it works.</h2></header>
+    <div class="steps">
+      <div data-reveal><h3>Pick a channel</h3><p>One sentence on the first step.</p></div>
+      <div data-reveal style="--reveal-delay: 70ms"><h3>Filter it</h3><p>One sentence on the second step.</p></div>
+      <div data-reveal style="--reveal-delay: 140ms"><h3>Jump to the moment</h3><p>One sentence on the third step.</p></div>
+    </div>
+  </section>
+
+  <section class="section page" id="get">
+    <div class="band" data-reveal>
+      <div><h2>Get cyex deck.</h2><p>Windows 10 or 11, 64-bit.</p></div>
+      <a class="btn btn-primary" href="#">Download for Windows</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="page">
+    <div class="top">
+      <a class="brand" href="https://cyex.app"><svg viewBox="3 5 25 22" width="22" height="19" aria-hidden="true"><rect x="3" y="5" width="15" height="6" fill="var(--mark-ink)"/><rect x="10" y="13" width="18" height="6" fill="var(--accent)"/><rect x="3" y="21" width="15" height="6" fill="var(--mark-ink)"/></svg>cyex</a>
+      <nav class="links" aria-label="Footer"><a href="#">cyex deck</a><a href="#">cyex logs</a><a href="#">GitHub</a></nav>
+    </div>
+    <div class="base"><p>Not affiliated with, endorsed by, or sponsored by Twitch. © <span id="year">2026</span> seryxx</p></div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const onScroll = () => {
+    nav.classList.toggle('scrolled', scrollY > 8);
+    for (const el of document.querySelectorAll('[data-reveal]:not(.in)'))
+      if (el.getBoundingClientRect().top < innerHeight * 0.92) el.classList.add('in');
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  document.getElementById('year').textContent = new Date().getFullYear();
+  document.getElementById('theme').addEventListener('click', () => {
+    const flip = () => {
+      const light = document.documentElement.dataset.theme !== 'light';
+      if (light) document.documentElement.dataset.theme = 'light'; else delete document.documentElement.dataset.theme;
+      try { localStorage.setItem('cyexTheme', light ? 'light' : 'dark'); } catch (e) {}
+      document.querySelector('meta[name="theme-color"]').content = light ? '#ffffff' : '#08090c';
+    };
+    if (document.startViewTransition && !still()) document.startViewTransition(flip); else flip();
+  });
+</script>
+</body>
+</html>
