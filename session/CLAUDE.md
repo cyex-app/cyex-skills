@@ -31,6 +31,7 @@ When a message starts with one of these, load the skill named and follow it. The
 | `#optimize2 <task>` | `optimize2` | Same, but stops after every phase with a ready `/compact` prompt so the session can be compacted between phases. |
 | `#uitest [target]` | `uitest` | Thorough UI, behaviour and edge-case test of a site or app across resolutions, themes and inputs. Reports; doesn't change code. |
 | `#improve [scope]` | `deep-improve` | Audits the codebase with the code-quality skills, then fixes what's verified, on a branch, with tests after each fix. |
+| `#clean [deep\|report]` | `clean` | Shrinks the project on disk: removes regenerable build output (e.g. `cargo clean`), then proposes unused assets and old files to remove recoverably. |
 
 Note: `#improve` is `deep-improve`. The skill named `improve` (shadcn) only writes plans and never changes code; `deep-improve` uses it as one of its auditors.
 
@@ -51,6 +52,7 @@ The user won't name skills or paths; match the request to this table and load wh
 | test a site or app, QA, "check everything works / looks right", overnight test | `uitest` |
 | improve, clean up, audit and fix, refactor the codebase, overnight improvement | `deep-improve` |
 | audit only, a plan or roadmap for others to implement, "what should we improve" | `improve` |
+| clean up, slim down, free disk space, remove unused files or assets | `clean` |
 | a strict / harsh / deep code-quality or maintainability review | `thermo-nuclear-code-quality-review` *(manual)* |
 | architecture, module boundaries, "deepen" modules, make code testable | `improve-codebase-architecture` *(manual)* with `codebase-design` |
 | domain terms, glossary, ADRs | `domain-modeling` |

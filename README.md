@@ -22,6 +22,7 @@ Extracted on 2026/10/23 from cyex deck, cyex hub, cyex logs and the cyex deck si
 | [optimize2](optimize2/SKILL.md) | `#optimize2`: same, stopping after each phase with a `/compact` prompt. |
 | [uitest](uitest/SKILL.md) | `#uitest`: full UI, behaviour and edge-case test across resolutions, themes and inputs; report only. |
 | [deep-improve](deep-improve/SKILL.md) | `#improve`: audit with the code-quality skills, verify, fix on an `improve/<date>` branch with checks after each fix. |
+| [clean](clean/SKILL.md) | `#clean`: shrink a project on disk. Removes regenerable build output (e.g. `cargo clean`), then proposes unused assets and old files to remove recoverably. `#clean deep` also drops dependency installs; `#clean report` changes nothing. |
 
 These build on other people's skills, installed separately:
 - [emilkowalski/skills](https://github.com/emilkowalski/skills) (MIT): `apple-design`, `emil-design-eng`, `animate`, `review-animations`, `break-ui`, `mobile-native` and more. Copy them into `vendor/emilkowalski/` and the installer links them too.
@@ -46,7 +47,7 @@ Regular claude.ai chats don't read `~/.claude`. Build one zip per skill and uplo
 & .\cyex-skills\tools\package-claude-ai.ps1
 ```
 
-Packaged: the design skills and anything in `vendor/`. Not packaged: `optimize`, `optimize2`, `uitest`, `deep-improve`, which need Claude Code's agents, browser and local files.
+Packaged: the design skills and anything in `vendor/`. Not packaged: `optimize`, `optimize2`, `uitest`, `deep-improve`, `clean`, which need Claude Code's agents, browser and local files.
 
 ## Where existing projects differ from the skills
 
