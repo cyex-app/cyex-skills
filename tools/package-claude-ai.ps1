@@ -7,7 +7,7 @@ $root = Split-Path $PSScriptRoot -Parent
 $out = Join-Path $root 'dist\claude-ai'
 $stage = Join-Path $env:TEMP 'cyex-skill-stage'
 
-$sources = @('cyex-design', 'cyex-web', 'cyex-app', 'web-design-toolkit' | ForEach-Object { Join-Path $root $_ })
+$sources = @('cyex-design', 'cyex-web', 'cyex-app', 'cyex-docs', 'web-design-toolkit' | ForEach-Object { Join-Path $root $_ })
 $vendor = Join-Path $root 'vendor'
 if (Test-Path $vendor) {
   $sources += Get-ChildItem -Directory -Recurse $vendor | Where-Object { Test-Path (Join-Path $_.FullName 'SKILL.md') } | ForEach-Object { $_.FullName }

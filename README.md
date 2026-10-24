@@ -9,6 +9,7 @@ Skills for Claude Code: the cyex design system, plus a set of working defaults a
 | [cyex-design](cyex-design/SKILL.md) | The shared core: accent, mark, theme switching, voice, number and date formats, accessibility floors. Always loaded with one of the two below. |
 | [cyex-web](cyex-web/SKILL.md) | Landing pages, product sites, the hub, 404s. Near-black ground, Geist, 3px buttons, mounts. Has a token file and a starter page. |
 | [cyex-app](cyex-app/SKILL.md) | The desktop app and dense web tools (logs viewer, request form, VOD finder, dashboards, settings). Warm grey, IBM Plex, compact controls. Has a token file and component specs. |
+| [cyex-docs](cyex-docs/SKILL.md) | Docs and API reference pages like the cyex logs docs: filterable index that follows the reader both ways, guides, endpoints beside sticky code samples. Has the CSS, a framework-free behaviour script and a working starter page (rebuild it with `tools/build-docs-starter.ps1`). |
 | [web-design-toolkit](web-design-toolkit/SKILL.md) | Component, motion, chart and 3D sources for web work, loaded automatically. |
 
 Extracted on 2026/10/23 from cyex deck, cyex hub, cyex logs and the cyex deck site. Where those disagreed: accents from cyex logs (`#145aff` dark, `#14e6ff` light), the hub's style for web pages, dates as `yyyy/mm/dd`.

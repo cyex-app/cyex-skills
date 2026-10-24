@@ -1,6 +1,6 @@
 ---
 name: web-design-toolkit
-description: Curated sources for building web pages and UI - animated React components (Kokonut UI, Cult UI, React Bits, Componentry), charts (Bklit UI), motion (Motion / motion.dev) and 3D (three.js) - with when to use each, install commands through the shadcn registry, and the rules for keeping borrowed components on-brand, accessible and fast. Use automatically whenever building, designing or restyling a website, landing page, web app UI, component, animation, chart or 3D scene, especially in React, Next.js, Tailwind or shadcn/ui projects.
+description: Curated sources for building web pages and UI - animated React components (Kokonut UI, Cult UI, React Bits, Componentry), charts (Bklit UI), motion (Motion / motion.dev) and 3D (three.js), plus an inspiration library of UX principles, big-company design systems, section galleries, prompt libraries and asset sources - with when to use each, install commands through the shadcn registry, and the rules for keeping borrowed components on-brand, accessible and fast. Use automatically whenever building, designing or restyling a website, landing page, web app UI, component, animation, chart or 3D scene, especially in React, Next.js, Tailwind or shadcn/ui projects.
 ---
 
 # web design toolkit
@@ -26,6 +26,10 @@ Use real, maintained building blocks instead of hand-rolling effects, and use th
 | [Componentry](https://componentry.dev) | ~50 animated React components: text effects, image trails, docks, card stacks, carousels. | Playful, showcase-style interactions on non-cyex pages. | `npx shadcn@latest add @componentry/<name>` |
 
 Before installing, open the component's page (WebFetch) to get its exact name, dependencies and props. Prefer the project's package manager (`pnpm dlx`, `bunx`, `npx`).
+
+## Inspiration and references
+
+[references/inspiration.md](references/inspiration.md) lists where to look before designing: principles (Laws of UX, Nielsen's heuristics, Apple HIG, GOV.UK, Inclusive Components), big design systems (Fluent 2, Spectrum, Base, Gestalt, Lightning, Wise, Geist), galleries by section type (landing pages, footers, CTAs, motion), prompt libraries for AI-built sites, background, icon and ASCII-art sources, and AI design tools. Check it when designing a new section, deciding a component's states, or reviewing a design.
 
 ## Rules for borrowed components
 

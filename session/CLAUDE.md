@@ -59,6 +59,7 @@ The user won't name skills or paths; match the request to this table and load wh
 | stress-test a plan or idea, "grill me" | `grilling` |
 | build or restyle a web page, landing page, component, chart, 3D | `web-design-toolkit` + `emil-design-eng` + `apple-design` |
 | anything cyex (deck, logs, hub, site) with a visual or written surface | `cyex-design` + `cyex-web` (pages people read) or `cyex-app` (UI people operate); these rules win over library defaults |
+| docs, an API reference, developer guides, help or changelog pages (cyex or any project wanting that look) | `cyex-docs` (with `cyex-design` + `cyex-app`) |
 | add or build an animation | `animate`; frame drops → `animation-performance`; name an effect → `animation-vocabulary` |
 | review existing motion | `review-animations` *(manual)* |
 | audit motion across a codebase / where motion is missing | `improve-animations` / `find-animation-opportunities` |

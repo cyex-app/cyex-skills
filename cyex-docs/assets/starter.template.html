@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#1e1f23">
+<title>API - cyex example</title>
+<meta name="description" content="The HTTP API behind cyex example: every endpoint, its parameters and responses, with examples.">
+<meta property="og:title" content="API reference">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  // Before first paint, so the theme never flashes. Dark unless "light" was chosen.
+  try { if (localStorage.getItem('cyexTheme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}
+</script>
+<style>
+/* ---- cyex-app tokens (cyex-app/references/tokens.css) ---- */
+/*@@TOKENS@@*/
+
+/* ---- docs layout (cyex-docs/references/docs.css) ---- */
+/*@@DOCS_CSS@@*/
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="https://cyex.app" aria-label="cyex">
+      <span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <b>cyex</b>
+    </a>
+    <nav class="links" aria-label="Pages">
+      <a href="#">Logs</a>
+      <a href="#" aria-current="page">Docs</a>
+      <a href="#">Opt out</a>
+    </nav>
+    <span class="top-spacer"></span>
+    <button class="theme-toggle" id="theme" type="button" aria-label="Switch theme">
+      <svg class="icon-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.455 2.004a.75.75 0 01.26.77 7 7 0 009.958 7.967.75.75 0 011.067.853A8.5 8.5 0 116.647 1.921a.75.75 0 01.808.083z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.06l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="docs-shell">
+  <aside class="docs-nav">
+    <div class="nav-search">
+      <svg class="nav-search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/></svg>
+      <input type="text" placeholder="Find an endpoint" aria-label="Find an endpoint" autocomplete="off" spellcheck="false">
+      <kbd class="nav-kbd">Ctrl K</kbd>
+      <button type="button" class="input-clear" aria-label="Clear"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2l6 6M8 2L2 8"/></svg></button>
+    </div>
+    <nav class="nav-scroll" aria-label="Contents">
+      <div class="nav-group">
+        <div class="nav-group-title">Notes</div>
+        <a href="#introduction" class="nav-item guide">Basics</a>
+        <a href="#formats" class="nav-item guide">Formats</a>
+        <a href="#caching" class="nav-item guide">Caching</a>
+        <a href="#limits" class="nav-item guide">Limits</a>
+      </div>
+      <!-- Endpoint groups are rendered from SPEC below. -->
+      <div class="nav-empty" hidden></div>
+    </nav>
+  </aside>
+
+  <main class="docs-body" id="main">
+    <header class="docs-title">
+      <div>
+        <h1>API</h1>
+        <p>The example service's HTTP API, as run here.</p>
+      </div>
+      <span class="docs-stat"><span class="docs-stat-label">Channels connected</span><span class="docs-stat-count">1.284</span></span>
+    </header>
+
+    <section class="guide" id="introduction">
+      <h2>Basics</h2>
+      <p class="guide-lede">One line on what this service is and what the API gives you.</p>
+      <div class="base-url"><span class="base-url-label">Base URL</span><code>https://api.example.cyex.app</code></div>
+      <p>Reading needs no key. Say how things are addressed, and which form to keep around.</p>
+      <p>Say where the machine-readable spec is, and what isn't in it.</p>
+    </section>
+
+    <section class="guide" id="formats">
+      <h2>Formats</h2>
+      <p>Every list endpoint takes the same format flags. Only presence matters.</p>
+      <div class="fmt-grid">
+        <div class="fmt"><code>json</code><span>Everything, as JSON. What the site uses.</span></div>
+        <div class="fmt"><code>ndjson</code><span>One JSON object per line. Streams.</span></div>
+        <div class="fmt"><code>(none)</code><span>Plain text. The default.</span></div>
+      </div>
+      <div class="note">Page with <code>limit</code> and <code>offset</code>. A note is a plain panel: worth knowing, not a warning.</div>
+    </section>
+
+    <section class="guide" id="caching">
+      <h2>Caching</h2>
+      <p>Responses set <code>Cache-Control</code>, so an ordinary HTTP cache does the work.</p>
+      <div class="fmt-grid">
+        <div class="fmt"><code>max-age=600</code><span>Lists that change slowly.</span></div>
+        <div class="fmt"><code>no-cache</code><span>Anything still open.</span></div>
+      </div>
+    </section>
+
+    <section class="guide" id="limits">
+      <h2>Limits</h2>
+      <p>Say the rate limit in plain numbers: 60 requests a minute per IP, and what happens past it.</p>
+    </section>
+
+    <div id="ops"></div>
+
+    <footer class="docs-foot">
+      cyex example runs on something open source. Not affiliated with, endorsed by, or sponsored by Twitch Interactive, Inc.<br>
+      <a href="#">Opt out</a> · <a href="#">Contact</a>
+    </footer>
+  </main>
+</div>
+
+<script type="module">
+// In a real project, render these at build time (or from a spec.js in Svelte).
+const HOST = 'https://api.example.cyex.app';
+const LANGS = [['curl', 'cURL'], ['js', 'JavaScript'], ['py', 'Python']];
+const p = (name, where, type, desc, extra = {}) => ({ name, in: where, type, desc, ...extra });
+const SPEC = [
+  { id: 'channels', title: 'Channels', ops: [
+    { id: 'get-channels', method: 'GET', summary: 'List channels', path: '/channels', desc: 'Every channel being logged, with its id.', params: [p('limit', 'query', 'integer', 'How many to return.', { def: '100' })] },
+    { id: 'get-channel', method: 'GET', summary: 'Get a channel', path: '/channel/{name}', desc: 'One channel by login.', params: [p('name', 'path', 'string', 'The channel login.', { req: true })] },
+    { id: 'get-channel-by-id', method: 'GET', summary: 'Get a channel by id', path: '/channelid/{id}', desc: 'The same, by numeric id. Ids survive renames.', params: [p('id', 'path', 'string', 'The numeric channel id.', { req: true })] },
+    { id: 'get-channel-stats', method: 'GET', summary: 'Get channel stats', path: '/channel/{name}/stats', desc: 'Message counts for a channel.', params: [p('name', 'path', 'string', 'The channel login.', { req: true }), p('from', 'query', 'date', 'Start of the range.'), p('to', 'query', 'date', 'End of the range.')] },
+    { id: 'request-channel', method: 'POST', summary: 'Request a channel', path: '/channels/request', desc: 'Ask for a channel to be logged.', params: [p('name', 'query', 'string', 'The channel login.', { req: true })] },
+  ]},
+  { id: 'messages', title: 'Messages', ops: [
+    { id: 'get-channel-logs', method: 'GET', summary: 'Get channel logs', path: '/channel/{name}', desc: 'The most recent day of a channel.', params: [p('name', 'path', 'string', 'The channel login.', { req: true }), p('json', 'query', 'flag', 'Return JSON.')] },
+    { id: 'get-channel-logs-by-date', method: 'GET', summary: 'Get channel logs by date', path: '/channel/{name}/{yyyy}/{mm}/{dd}', desc: 'One day of a channel.', params: [p('name', 'path', 'string', 'The channel login.', { req: true }), p('yyyy', 'path', 'integer', 'Year.', { req: true }), p('mm', 'path', 'integer', 'Month.', { req: true }), p('dd', 'path', 'integer', 'Day.', { req: true })] },
+    { id: 'get-user-logs', method: 'GET', summary: 'Get user logs', path: '/channel/{name}/user/{user}', desc: 'One user in one channel, most recent month.', params: [p('name', 'path', 'string', 'The channel login.', { req: true }), p('user', 'path', 'string', 'The user login.', { req: true })] },
+    { id: 'search-user-logs', method: 'GET', summary: 'Search user logs', path: '/channel/{name}/user/{user}/search', desc: 'Everything a user said in a channel that matches.', params: [p('q', 'query', 'string', 'The text to find.', { req: true })] },
+    { id: 'random-line', method: 'GET', summary: 'Random channel line', path: '/channel/{name}/random', desc: 'One random message.', params: [p('name', 'path', 'string', 'The channel login.', { req: true })] },
+    { id: 'firehose', method: 'WS', summary: 'Firehose', path: '/firehose', desc: 'Every message as it arrives, over a WebSocket.', params: [] },
+  ]},
+  { id: 'users', title: 'Users', ops: [
+    { id: 'get-user', method: 'GET', summary: 'Get a user', path: '/user/{user}', desc: 'A user by login.', params: [p('user', 'path', 'string', 'The user login.', { req: true })] },
+    { id: 'get-user-stats', method: 'GET', summary: 'Get user stats', path: '/user/{user}/stats', desc: 'Message counts for a user.', params: [p('user', 'path', 'string', 'The user login.', { req: true })] },
+    { id: 'get-name-history', method: 'GET', summary: 'Get name history', path: '/userid/{id}/names', desc: 'Every login an id has had, with dates.', params: [p('id', 'path', 'string', 'The numeric user id.', { req: true })] },
+    { id: 'optout', method: 'POST', summary: 'Opt out', path: '/optout', desc: 'Stops a user being logged. Returns a code to send in chat.', params: [] },
+  ]},
+  { id: 'admin', title: 'Admin', ops: [
+    { id: 'admin-add-channels', method: 'POST', summary: 'Add channels', path: '/admin/channels', desc: 'Start logging channels.', auth: true, params: [p('X-Api-Key', 'header', 'string', 'The admin key.', { req: true })] },
+    { id: 'admin-remove-channels', method: 'DELETE', summary: 'Remove channels', path: '/admin/channels', desc: 'Stop logging channels. Logs already kept stay.', auth: true, params: [p('X-Api-Key', 'header', 'string', 'The admin key.', { req: true })] },
+    { id: 'get-version', method: 'GET', summary: 'Get version', path: '/version', desc: 'The running build.', params: [] },
+  ]},
+];
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const copyIcon = '<svg class="icon-copy" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7 3a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V7.414A2 2 0 0014.414 6L12 3.586A2 2 0 0010.586 3H7z"/><path d="M4 6.5a.75.75 0 00-.75.75V15A2.75 2.75 0 006 17.75h5.25a.75.75 0 000-1.5H6c-.69 0-1.25-.56-1.25-1.25V7.25A.75.75 0 004 6.5z"/></svg><svg class="icon-done" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0l-3.5-3.5a1 1 0 111.4-1.4l2.8 2.79 6.8-6.79a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>';
+const sample = (op, lang) => {
+  const url = HOST + op.path;
+  if (lang === 'curl') return `curl ${op.method === 'GET' ? '' : `-X ${op.method} `}"${url}"`;
+  if (lang === 'js') return `const res = await fetch("${url}"${op.method === 'GET' ? '' : `, { method: "${op.method}" }`});\nconst data = await res.json();`;
+  return `import requests\n\nres = requests.${op.method === 'GET' ? 'get' : op.method.toLowerCase()}("${url}")\ndata = res.json()`;
+};
+const paramRow = x => `<div class="param"><div class="param-sig"><code class="param-name">${esc(x.name)}</code><span class="param-type">${esc(x.type)}</span>${x.req ? '<span class="param-req">required</span>' : ''}${x.def ? `<span class="param-default">default <code>${esc(x.def)}</code></span>` : ''}</div><div class="param-desc">${esc(x.desc)}</div></div>`;
+const where = [['path', 'Path parameters'], ['query', 'Query parameters'], ['header', 'Headers']];
+
+let navHtml = '', bodyHtml = '';
+for (const g of SPEC) {
+  navHtml += `<div class="nav-group"><div class="nav-group-title">${esc(g.title)}</div>`;
+  bodyHtml += `<div class="op-group"><h2 class="op-group-title">${esc(g.title)}</h2>`;
+  for (const op of g.ops) {
+    const m = op.method.toLowerCase();
+    navHtml += `<a href="#${op.id}" class="nav-item" data-search="${esc(op.path)}"><span class="nav-method m-${m}">${op.method}</span><span class="nav-label">${esc(op.summary)}</span></a>`;
+    const params = where.map(([loc, title]) => {
+      const rows = op.params.filter(x => x.in === loc);
+      return rows.length ? `<div class="param-group"><div class="param-group-title">${title}</div>${rows.map(paramRow).join('')}</div>` : '';
+    }).join('');
+    bodyHtml += `<section class="op" id="${op.id}"><div class="op-main">
+      <div class="op-head"><span class="method m-${m}">${op.method}</span><h3 class="op-title">${esc(op.summary)}</h3>${op.auth ? '<span class="auth-chip" title="Needs an admin key">Restricted</span>' : ''}</div>
+      <div class="op-path"><span class="op-host">${HOST}</span>${esc(op.path)}</div>
+      <p class="op-desc">${esc(op.desc)}</p>${params}
+      <div class="param-group"><div class="param-group-title">Responses</div>
+        <div class="resp-row"><span class="status-pip ok"></span><code class="resp-code">200</code><span class="resp-desc">It worked.</span></div>
+        <div class="resp-row"><span class="status-pip err"></span><code class="resp-code">404</code><span class="resp-desc">Nothing by that name.</span></div>
+      </div></div>
+      <div class="op-aside"><div class="code-panel">
+        <div class="code-block"><div class="code-head"><div class="lang-tabs" role="tablist">${LANGS.map(([id, label]) => `<button type="button" class="lang-tab" role="tab" data-lang="${id}">${label}</button>`).join('')}</div><button type="button" class="code-copy" title="Copy request" aria-label="Copy request">${copyIcon}</button></div>
+          ${LANGS.map(([id]) => `<pre data-lang="${id}"><code>${esc(sample(op, id))}</code></pre>`).join('')}</div>
+        <div class="code-block"><div class="code-head"><div class="resp-head"><span class="status-pip ok"></span><span class="resp-status">200</span><span class="resp-type">application/json</span></div><button type="button" class="code-copy" title="Copy response" aria-label="Copy response">${copyIcon}</button></div>
+          <pre><code>${esc(JSON.stringify({ ok: true, id: op.id }, null, 2))}</code></pre></div>
+      </div></div></section>`;
+  }
+  navHtml += '</div>';
+  bodyHtml += '</div>';
+}
+document.querySelector('.nav-empty').insertAdjacentHTML('beforebegin', navHtml);
+document.getElementById('ops').innerHTML = bodyHtml;
+
+document.getElementById('theme').addEventListener('click', () => {
+  const light = document.documentElement.dataset.theme !== 'light';
+  if (light) document.documentElement.dataset.theme = 'light'; else delete document.documentElement.dataset.theme;
+  try { localStorage.setItem('cyexTheme', light ? 'light' : 'dark'); } catch (e) {}
+  document.querySelector('meta[name="theme-color"]').content = light ? '#f3f3f4' : '#1e1f23';
+});
+
+/* ---- cyex-docs/references/behaviour.js ---- */
+/*@@BEHAVIOUR@@*/
+
+initDocs();
+</script>
+</body>
+</html>

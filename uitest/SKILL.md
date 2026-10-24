@@ -18,6 +18,7 @@ Load these before judging (all in `~/.claude/skills/`):
 - `break-ui`: worst-case data catalogue.
 - `mobile-native`: phone behaviour.
 - `design:accessibility-review` if available, else WCAG 2.2 AA by hand.
+- Nielsen's 10 usability heuristics and Laws of UX (both in `web-design-toolkit/references/inspiration.md`) as the usability checklist; GOV.UK Design System for form and error-message patterns.
 - cyex projects: `cyex-design` and `cyex-web` / `cyex-app`. Their rules are the spec; a deviation is a finding.
 
 ## Phase 1: recon (you, or one `haiku` agent)

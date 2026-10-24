@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#1e1f23">
+<title>API - cyex example</title>
+<meta name="description" content="The HTTP API behind cyex example: every endpoint, its parameters and responses, with examples.">
+<meta property="og:title" content="API reference">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  // Before first paint, so the theme never flashes. Dark unless "light" was chosen.
+  try { if (localStorage.getItem('cyexTheme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}
+</script>
+<style>
+/* ---- cyex-app tokens (cyex-app/references/tokens.css) ---- */
+/* cyex app tokens: the desktop app (cyex deck) and dense web tools (cyex logs, request, VOD finder).
+   Palette is shared value for value between cyex deck (ui/src/design/tokens.css) and cyex logs
+   (svelte/index.html). Accent tokens are the cyex-design set. Use only these values. */
+
+:root,
+.theme-dark {
+  color-scheme: dark;
+
+  /* One flat warm-neutral grey, not black: the content is a wall of text and a shaded backdrop
+     competes with it. Surfaces are opaque steps up, so a panel over a panel still reads. */
+  --bg: #1e1f23;
+  --surface: #26272c;
+  --surface-hover: #2d2e34;
+  --elevated: #2f3037;   /* popovers, menus, dialogs: a step wide enough to read as height */
+  --elevated-2: #353640; /* tooltips, tiles inside a popover */
+  --border: #34353c;
+  --border-strong: #43454d;
+  --text: #e8e8ea;
+  --muted: #b4b5bb;
+  --dim: #9fa1a9;
+  --neutral-chip: #34353c;
+  --row-hover: rgba(255, 255, 255, .035);
+  --row-alt: rgba(255, 255, 255, .015);
+  --shadow: rgba(0, 0, 0, .35);
+  --overlay: rgba(14, 15, 18, .6);
+
+  --accent: #145aff;
+  --accent-2: #2a6aff;
+  --accent-text: #7ea4ff;
+  --accent-ink: #ffffff;
+  --accent-dim: rgba(20, 90, 255, .14);
+  --accent-wash: rgba(20, 90, 255, .22);
+  --accent-border: rgba(20, 90, 255, .55);
+
+  --red: #ff6b6b;
+  --yellow: #ffb545;
+  --green: #33d68f;
+  --cyan: #4fd6ff;
+  --pink: #ff7bd5;
+  --purple: #b083ff;
+  --gold: #ffd45e;
+  --twitch: #a970ff;
+  --live: #e91916;
+  --danger-solid: #e81123;
+
+  --shadow-pop: 0 8px 24px var(--shadow);
+  --shadow-dialog: 0 16px 48px var(--shadow);
+  /* The one keyboard focus colour: the text colour. The accent marks what's selected,
+     and a user's accent can be too faint to see. */
+  --focus-ring: var(--text);
+}
+
+:root {
+  /* Theme-independent */
+  --kick: #53fc18;
+  --twitch-logo: #9146ff;
+  --on-solid: #ffffff;          /* text on --live / --danger-solid */
+  --on-video: #ffffff;          /* video and pictures stay dark in both themes */
+  --on-video-dim: #dddddd;
+  --scrim: rgba(0, 0, 0, .55);
+  --scrim-strong: rgba(0, 0, 0, .72);
+
+  --font-ui: 'IBM Plex Sans', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Cascadia Mono', ui-monospace, Consolas, monospace;
+
+  /* Desktop density (13px base). Web tools set body to .87rem on a 16px root instead. */
+  --text-base: 13px;
+  --text-sub: .85rem;
+  --text-hint: .78rem;
+  --text-label: .68rem;
+
+  --radius: 3px;
+  --radius-sm: 2px;
+  --radius-pill: 999px;  /* switch tracks and count badges only */
+  --chrome-h: 38px;
+
+  /* Motion: hovers and small state changes, things that appear, things that travel. */
+  --fast: .12s;
+  --base: .2s;
+  --slow: .36s;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+
+  /* Stacking, low to high. Raw 1-9 stay inside a component. */
+  --z-panel: 10;
+  --z-popover: 300;
+  --z-dialog: 320;
+  --z-menu: 350;
+  --z-tooltip: 390;
+  --z-toast: 600;
+}
+
+:root[data-theme='light'],
+.theme-light {
+  color-scheme: light;
+  --bg: #f3f3f4;
+  --surface: #ffffff;
+  --surface-hover: #f6f6f7;
+  --elevated: #ffffff;
+  --elevated-2: #f4f4f6;
+  --border: #dcdde1;
+  --border-strong: #c4c6cc;
+  --text: #1b1c20;
+  --muted: #4f515a;
+  --dim: #6b6d76;        /* not a mirror: a straight flip lands near 2.9:1 on white */
+  --neutral-chip: #e6e7ea;
+  --row-hover: rgba(20, 22, 30, .035);
+  --row-alt: rgba(20, 22, 30, .015);
+  --shadow: rgba(20, 22, 30, .12);
+  --overlay: rgba(243, 243, 244, .7);
+
+  --accent: #14e6ff;
+  --accent-2: #10c9e6;
+  --accent-text: #046a82;
+  --accent-ink: #00232b;
+  --accent-dim: rgba(4, 106, 130, .08);
+  --accent-wash: rgba(4, 106, 130, .16);
+  --accent-border: rgba(4, 106, 130, .4);
+
+  /* Darkened rather than mirrored: the dark pastels sit at 2-3:1 on white. */
+  --red: #c1352f;
+  --yellow: #9a5c05;
+  --green: #0f8a55;
+  --cyan: #0b6d8a;
+  --pink: #a82277;
+  --purple: #6b34c9;
+  --gold: #7d5a00;
+  --twitch: #772ce8;
+  --live: #d9120f;
+  --danger-solid: #c42b1c;
+
+  --shadow-pop: 0 8px 24px var(--shadow);
+  --shadow-dialog: 0 16px 48px var(--shadow);
+  --focus-ring: var(--text);
+}
+
+/* Kick: the accent changes, nothing else. After the light block on purpose. */
+[data-platform='kick'] {
+  --accent: #45ca16; --accent-2: #3db313; --accent-text: #45ca16; --accent-ink: #0b2200;
+  --accent-dim: rgba(69, 202, 22, .14); --accent-wash: rgba(69, 202, 22, .22); --accent-border: rgba(69, 202, 22, .55);
+}
+[data-platform='kick'][data-theme='light'] {
+  --accent: #53fc18; --accent-2: #48e60a; --accent-text: var(--text);
+  --accent-dim: rgba(83, 252, 24, .14); --accent-wash: rgba(83, 252, 24, .28); --accent-border: #53fc18;
+}
+
+/* ---- base ---- */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--text-base)/1.45 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--accent-text); }
+::selection { background: var(--border-strong); }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* Section label: the one uppercase text style. */
+.label {
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* Shared form field look. */
+.field {
+  height: 30px;
+  padding: 0 10px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color var(--fast);
+}
+.field:focus-visible { border-color: var(--focus-ring); box-shadow: 0 0 0 1px var(--focus-ring); }
+.field::placeholder { color: var(--dim); }
+
+/* Scrollbars: 11px, quiet. */
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border: 2px solid transparent; border-radius: var(--radius); background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background-color: var(--dim); }
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
+}
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 150ms; }
+
+/* ---- docs layout (cyex-docs/references/docs.css) ---- */
+/* cyex docs layout. Needs the cyex-app tokens (cyex-app/references/tokens.css) loaded first.
+   Modelled on the cyex logs API reference: a persistent index on the left, prose and
+   endpoints on the right, each endpoint beside a sticky sample panel. */
+
+html { scrollbar-gutter: stable; scroll-behavior: smooth; overflow-y: scroll; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { font-family: var(--font-ui); font-size: 16px; line-height: 1.5; user-select: auto; }
+a { color: var(--accent-text); }
+
+code {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1px 6px; font-size: .86em; font-family: var(--font-mono);
+}
+pre {
+  background: var(--elevated-2); border: 1px solid var(--border); border-radius: 0;
+  padding: 14px 16px; overflow-x: auto; font-size: .82rem; line-height: 1.6; font-family: var(--font-mono);
+}
+pre code { background: none; border: none; padding: 0; }
+
+/* ---------- Header ---------- */
+header.top { position: sticky; top: 0; z-index: 40; background: var(--bg); border-bottom: 1px solid var(--border); }
+.top-inner { max-width: 1520px; margin: 0 auto; padding: 13px 20px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.brand .mark { width: 25px; height: 22px; position: relative; flex: none; }
+.brand .mark i { position: absolute; left: 0; width: 15px; height: 6px; background: var(--text); }
+.brand .mark i:nth-child(1) { top: 0; }
+.brand .mark i:nth-child(2) { top: 8px; left: 7px; width: 18px; background: var(--accent); }
+.brand .mark i:nth-child(3) { top: 16px; }
+.brand b { font-weight: 700; font-size: 1.04rem; line-height: 1; }
+nav.links { display: flex; margin-left: 6px; flex-wrap: wrap; }
+nav.links a {
+  text-decoration: none; color: var(--muted); font-size: .72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; padding: 9px 2px; margin: 0 11px; position: relative; transition: color .15s;
+}
+nav.links a::after { content: ''; position: absolute; left: 0; right: 0; bottom: 3px; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .18s ease; }
+nav.links a:hover { color: var(--text); }
+nav.links a:hover::after { transform: scaleX(.45); }
+nav.links a[aria-current="page"] { color: var(--text); }
+nav.links a[aria-current="page"]::after { transform: scaleX(1); }
+.top-spacer { flex: 1; }
+.theme-toggle {
+  display: flex; align-items: center; justify-content: center; width: 37px; height: 37px; flex: none; padding: 0;
+  background: var(--surface); border: 1px solid var(--border-strong); color: var(--muted);
+  border-radius: var(--radius); cursor: pointer; transition: background .15s, color .15s;
+}
+.theme-toggle:hover { background: var(--surface-hover); color: var(--text); }
+.theme-toggle svg { width: 16px; height: 16px; }
+.theme-toggle .icon-sun, [data-theme="light"] .theme-toggle .icon-moon { display: none; }
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+
+/* ---------- Shell ---------- */
+.docs-shell { display: grid; grid-template-columns: 272px minmax(0, 1fr); align-items: start; max-width: 1520px; margin: 0 auto; }
+
+/* The index: sticky under the header, its own height, its own scroll. */
+.docs-nav {
+  position: sticky; top: var(--header-h, 62px); align-self: start;
+  height: calc(100vh - var(--header-h, 62px)); display: flex; flex-direction: column;
+  border-right: 1px solid var(--border); padding: 16px 10px 0 20px;
+}
+.nav-search { position: relative; display: flex; align-items: center; margin-bottom: 14px; flex: none; }
+.nav-search-icon { position: absolute; left: 10px; width: 13px; height: 13px; color: var(--dim); pointer-events: none; }
+.nav-search input {
+  width: 100%; padding: 8px 44px 8px 30px; border-radius: 0; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font: inherit; font-size: .82rem; outline: none;
+  transition: border-color .15s, background .15s;
+}
+.nav-search input::placeholder { color: var(--dim); }
+.nav-search input:focus { border-color: var(--accent-border); background: var(--surface-hover); }
+.nav-kbd {
+  position: absolute; right: 8px; font-family: var(--font-mono); font-size: .66rem; color: var(--dim);
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 2px 5px; pointer-events: none;
+}
+.input-clear {
+  position: absolute; top: 50%; right: 10px; margin-top: -9px; width: 18px; height: 18px; padding: 0; border: 0;
+  border-radius: 50%; display: none; align-items: center; justify-content: center;
+  background: var(--border-strong); color: var(--muted); cursor: pointer; transition: background .12s, color .12s;
+}
+.input-clear:hover { background: var(--dim); color: var(--surface); }
+.input-clear svg { width: 8px; height: 8px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.nav-search.has-value .input-clear { display: flex; }
+.nav-search.has-value .nav-kbd { display: none; }
+
+/* min-height: 0 lets the list shrink inside the column so it scrolls instead of overflowing. */
+.nav-scroll { overflow-y: auto; overscroll-behavior: contain; padding-bottom: 28px; flex: 1; min-height: 0; }
+.nav-group { margin-bottom: 16px; }
+.nav-group[hidden], .nav-item[hidden] { display: none; }
+.nav-group-title { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); font-weight: 700; padding: 0 8px; margin-bottom: 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: var(--radius);
+  color: var(--muted); text-decoration: none; font-size: .82rem; line-height: 1.35;
+  transition: background .12s, color .12s; position: relative;
+}
+.nav-item:hover { background: var(--surface-hover); color: var(--text); }
+.nav-item.active { background: var(--surface-hover); color: var(--text); font-weight: 600; }
+/* One lit rung on the rail's edge: the only accent in the index. */
+.nav-item.active::before { content: ''; position: absolute; left: -20px; top: 4px; bottom: 4px; width: 2px; background: var(--accent); }
+.nav-item.guide { padding-left: 9px; }
+.nav-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-empty { padding: 10px 8px; color: var(--dim); font-size: .8rem; }
+
+/* Method chips: a read is the ordinary case and stays grey; writes get a colour. */
+.nav-method, .method { font-family: var(--font-mono); font-weight: 700; letter-spacing: .03em; border-radius: var(--radius); flex: none; text-align: center; }
+.nav-method { font-size: .58rem; width: 46px; padding: 3px 0; }
+.method { font-size: .7rem; padding: 4px 9px; }
+.m-get { background: var(--neutral-chip); color: var(--text); }
+.m-post, .m-put, .m-patch { background: color-mix(in srgb, var(--green) 16%, transparent); color: var(--green); }
+.m-delete { background: color-mix(in srgb, var(--red) 16%, transparent); color: var(--red); }
+.m-ws { background: color-mix(in srgb, var(--yellow) 16%, transparent); color: var(--yellow); }
+
+/* ---------- Body ---------- */
+.docs-body { min-width: 0; padding: 34px 20px 60px; }
+.docs-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; max-width: 820px; margin-bottom: 30px; }
+.docs-title h1 { font-size: 2rem; margin: 0 0 6px; font-weight: 700; }
+.docs-title p { color: var(--muted); font-size: .97rem; margin: 0; }
+.docs-stat { display: flex; align-items: center; gap: 9px; flex: none; margin-top: 6px; background: var(--surface); border: 1px solid var(--border); padding: 6px 11px; }
+.docs-stat-label { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); font-weight: 700; }
+.docs-stat-count { font-family: var(--font-mono); font-size: .86rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* scroll-margin-top matches the scroll-spy's header offset (80). */
+section.guide { scroll-margin-top: 80px; margin-bottom: 34px; max-width: 820px; }
+section.guide h2 { font-size: 1.32rem; margin: 0 0 12px; font-weight: 700; }
+section.guide p { color: var(--muted); line-height: 1.7; font-size: .92rem; margin: 0 0 12px; }
+section.guide ol, section.guide ul { color: var(--muted); line-height: 1.75; font-size: .92rem; padding-left: 22px; margin: 0 0 12px; }
+section.guide strong { color: var(--text); }
+.guide-lede { font-size: 1rem !important; color: var(--text) !important; }
+
+.base-url { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 16px 0 18px; background: var(--surface); border: 1px solid var(--border); padding: 12px 14px; }
+.base-url-label, .param-group-title { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); font-weight: 700; }
+.base-url code { font-size: .86rem; }
+.fmt-grid { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); overflow: hidden; margin: 14px 0; }
+.fmt { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 14px; background: var(--surface); padding: 10px 14px; align-items: baseline; }
+.fmt > span { color: var(--muted); font-size: .86rem; line-height: 1.55; }
+.note { border: 1px solid var(--border); background: var(--elevated-2); padding: 12px 14px; font-size: .85rem; color: var(--muted); line-height: 1.6; margin: 14px 0; }
+.note strong { color: var(--text); }
+
+/* ---------- Endpoints ---------- */
+.op-group-title { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin: 44px 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+section.op { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 30px; align-items: start; padding: 26px 0; border-bottom: 1px solid var(--border); scroll-margin-top: 80px; }
+section.op:last-child { border-bottom: none; }
+.op-main { min-width: 0; }
+/* The sample panel is sticky per endpoint: it follows while you read that one, then hands off. */
+.op-aside { min-width: 0; position: sticky; top: 80px; }
+.op-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.op-title { font-size: 1.08rem; font-weight: 700; margin: 0; }
+.auth-chip { font-size: .62rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; color: var(--yellow); border: 1px solid color-mix(in srgb, var(--yellow) 40%, transparent); background: color-mix(in srgb, var(--yellow) 10%, transparent); border-radius: var(--radius); padding: 3px 8px; }
+.op-path { font-family: var(--font-mono); font-size: .82rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 11px; margin-bottom: 14px; overflow-x: auto; white-space: nowrap; }
+.op-host { color: var(--dim); }
+.op-desc { color: var(--muted); line-height: 1.7; font-size: .9rem; margin: 0 0 18px; }
+.param-group { margin-bottom: 18px; }
+.param-group-title { padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.param { padding: 11px 0; border-bottom: 1px solid var(--border); }
+.param:last-child { border-bottom: none; }
+.param-sig { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; margin-bottom: 4px; }
+.param-name { background: none; border: none; padding: 0; font-size: .83rem; font-weight: 600; color: var(--text); }
+.param-type { font-family: var(--font-mono); font-size: .72rem; color: var(--dim); }
+.param-req { font-size: .64rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; color: var(--red); }
+.param-default { font-size: .72rem; color: var(--dim); }
+.param-desc { color: var(--muted); font-size: .84rem; line-height: 1.6; }
+.resp-row { display: flex; align-items: baseline; gap: 9px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.resp-row:last-child { border-bottom: none; }
+.resp-code { background: none; border: none; padding: 0; font-size: .8rem; font-weight: 700; color: var(--text); flex: none; }
+.resp-desc { color: var(--muted); font-size: .84rem; line-height: 1.6; }
+.status-pip { width: 7px; height: 7px; border-radius: 50%; flex: none; position: relative; top: -1px; }
+.status-pip.ok { background: var(--green); box-shadow: 0 0 7px var(--green); }
+.status-pip.err { background: var(--dim); }
+
+/* ---------- Sample panel ---------- */
+.code-panel { display: flex; flex-direction: column; gap: 12px; }
+.code-block { background: var(--elevated-2); border: 1px solid var(--border); overflow: hidden; }
+.code-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 8px 6px 10px; border-bottom: 1px solid var(--border); background: var(--surface); }
+.lang-tabs { display: flex; gap: 2px; min-width: 0; overflow-x: auto; }
+.lang-tab { background: none; border: none; color: var(--dim); font: inherit; font-size: .74rem; font-weight: 600; padding: 5px 9px; border-radius: var(--radius); cursor: pointer; transition: background .12s, color .12s; white-space: nowrap; }
+.lang-tab:hover { color: var(--text); background: var(--surface-hover); }
+.lang-tab[aria-selected="true"] { background: var(--accent-dim); color: var(--accent-text); }
+.resp-head { display: flex; align-items: center; gap: 8px; font-size: .74rem; padding-left: 2px; }
+.resp-status { font-family: var(--font-mono); font-weight: 700; }
+.resp-type { color: var(--dim); }
+.code-copy { background: none; border: 1px solid transparent; color: var(--dim); padding: 5px; border-radius: var(--radius); cursor: pointer; display: flex; flex: none; transition: background .12s, color .12s; }
+.code-copy svg { width: 14px; height: 14px; }
+.code-copy .icon-done, .code-copy.copied .icon-copy { display: none; }
+.code-copy.copied .icon-done { display: block; }
+.code-copy:hover { background: var(--surface-hover); color: var(--text); }
+.code-copy.copied { color: var(--green); }
+.code-block pre { border: none; background: none; margin: 0; padding: 13px 15px; font-size: .775rem; line-height: 1.65; }
+.code-block pre[hidden] { display: none; }
+
+footer.docs-foot { margin: 40px 0 10px; padding: 18px 0; text-align: center; color: var(--dim); font-size: .76rem; line-height: 1.7; border-top: 1px solid var(--border); }
+footer.docs-foot a { color: var(--dim); text-decoration-color: var(--border-strong); }
+footer.docs-foot a:hover { color: var(--text); }
+
+/* ---------- Narrower screens ---------- */
+@media (max-width: 1180px) {
+  section.op { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .op-aside { position: static; }
+}
+@media (max-width: 900px) {
+  .docs-shell { grid-template-columns: minmax(0, 1fr); }
+  .docs-nav { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 14px 20px; }
+  .nav-scroll { max-height: 220px; }
+  .nav-kbd { display: none; }
+  .docs-body { padding: 26px 20px 50px; }
+}
+@media (max-width: 620px) { .fmt { grid-template-columns: 1fr; gap: 4px; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="https://cyex.app" aria-label="cyex">
+      <span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <b>cyex</b>
+    </a>
+    <nav class="links" aria-label="Pages">
+      <a href="#">Logs</a>
+      <a href="#" aria-current="page">Docs</a>
+      <a href="#">Opt out</a>
+    </nav>
+    <span class="top-spacer"></span>
+    <button class="theme-toggle" id="theme" type="button" aria-label="Switch theme">
+      <svg class="icon-moon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7.455 2.004a.75.75 0 01.26.77 7 7 0 009.958 7.967.75.75 0 011.067.853A8.5 8.5 0 116.647 1.921a.75.75 0 01.808.083z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.06l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="docs-shell">
+  <aside class="docs-nav">
+    <div class="nav-search">
+      <svg class="nav-search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/></svg>
+      <input type="text" placeholder="Find an endpoint" aria-label="Find an endpoint" autocomplete="off" spellcheck="false">
+      <kbd class="nav-kbd">Ctrl K</kbd>
+      <button type="button" class="input-clear" aria-label="Clear"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2l6 6M8 2L2 8"/></svg></button>
+    </div>
+    <nav class="nav-scroll" aria-label="Contents">
+      <div class="nav-group">
+        <div class="nav-group-title">Notes</div>
+        <a href="#introduction" class="nav-item guide">Basics</a>
+        <a href="#formats" class="nav-item guide">Formats</a>
+        <a href="#caching" class="nav-item guide">Caching</a>
+        <a href="#limits" class="nav-item guide">Limits</a>
+      </div>
+      <!-- Endpoint groups are rendered from SPEC below. -->
+      <div class="nav-empty" hidden></div>
+    </nav>
+  </aside>
+
+  <main class="docs-body" id="main">
+    <header class="docs-title">
+      <div>
+        <h1>API</h1>
+        <p>The example service's HTTP API, as run here.</p>
+      </div>
+      <span class="docs-stat"><span class="docs-stat-label">Channels connected</span><span class="docs-stat-count">1.284</span></span>
+    </header>
+
+    <section class="guide" id="introduction">
+      <h2>Basics</h2>
+      <p class="guide-lede">One line on what this service is and what the API gives you.</p>
+      <div class="base-url"><span class="base-url-label">Base URL</span><code>https://api.example.cyex.app</code></div>
+      <p>Reading needs no key. Say how things are addressed, and which form to keep around.</p>
+      <p>Say where the machine-readable spec is, and what isn't in it.</p>
+    </section>
+
+    <section class="guide" id="formats">
+      <h2>Formats</h2>
+      <p>Every list endpoint takes the same format flags. Only presence matters.</p>
+      <div class="fmt-grid">
+        <div class="fmt"><code>json</code><span>Everything, as JSON. What the site uses.</span></div>
+        <div class="fmt"><code>ndjson</code><span>One JSON object per line. Streams.</span></div>
+        <div class="fmt"><code>(none)</code><span>Plain text. The default.</span></div>
+      </div>
+      <div class="note">Page with <code>limit</code> and <code>offset</code>. A note is a plain panel: worth knowing, not a warning.</div>
+    </section>
+
+    <section class="guide" id="caching">
+      <h2>Caching</h2>
+      <p>Responses set <code>Cache-Control</code>, so an ordinary HTTP cache does the work.</p>
+      <div class="fmt-grid">
+        <div class="fmt"><code>max-age=600</code><span>Lists that change slowly.</span></div>
+        <div class="fmt"><code>no-cache</code><span>Anything still open.</span></div>
+      </div>
+    </section>
+
+    <section class="guide" id="limits">
+      <h2>Limits</h2>
+      <p>Say the rate limit in plain numbers: 60 requests a minute per IP, and what happens past it.</p>
+    </section>
+
+    <div id="ops"></div>
+
+    <footer class="docs-foot">
+      cyex example runs on something open source. Not affiliated with, endorsed by, or sponsored by Twitch Interactive, Inc.<br>
+      <a href="#">Opt out</a> · <a href="#">Contact</a>
+    </footer>
+  </main>
+</div>
+
+<script type="module">
+// In a real project, render these at build time (or from a spec.js in Svelte).
+const HOST = 'https://api.example.cyex.app';
+const LANGS = [['curl', 'cURL'], ['js', 'JavaScript'], ['py', 'Python']];
+const p = (name, where, type, desc, extra = {}) => ({ name, in: where, type, desc, ...extra });
+const SPEC = [
+  { id: 'channels', title: 'Channels', ops: [
+    { id: 'get-channels', method: 'GET', summary: 'List channels', path: '/channels', desc: 'Every channel being logged, with its id.', params: [p('limit', 'query', 'integer', 'How many to return.', { def: '100' })] },
+    { id: 'get-channel', method: 'GET', summary: 'Get a channel', path: '/channel/{name}', desc: 'One channel by login.', params: [p('name', 'path', 'string', 'The channel login.', { req: true })] },
+    { id: 'get-channel-by-id', method: 'GET', summary: 'Get a channel by id', path: '/channelid/{id}', desc: 'The same, by numeric id. Ids survive renames.', params: [p('id', 'path', 'string', 'The numeric channel id.', { req: true })] },
+    { id: 'get-channel-stats', method: 'GET', summary: 'Get channel stats', path: '/channel/{name}/stats', desc: 'Message counts for a channel.', params: [p('name', 'path', 'string', 'The channel login.', { req: true }), p('from', 'query', 'date', 'Start of the range.'), p('to', 'query', 'date', 'End of the range.')] },
+    { id: 'request-channel', method: 'POST', summary: 'Request a channel', path: '/channels/request', desc: 'Ask for a channel to be logged.', params: [p('name', 'query', 'string', 'The channel login.', { req: true })] },
+  ]},
+  { id: 'messages', title: 'Messages', ops: [
+    { id: 'get-channel-logs', method: 'GET', summary: 'Get channel logs', path: '/channel/{name}', desc: 'The most recent day of a channel.', params: [p('name', 'path', 'string', 'The channel login.', { req: true }), p('json', 'query', 'flag', 'Return JSON.')] },
+    { id: 'get-channel-logs-by-date', method: 'GET', summary: 'Get channel logs by date', path: '/channel/{name}/{yyyy}/{mm}/{dd}', desc: 'One day of a channel.', params: [p('name', 'path', 'string', 'The channel login.', { req: true }), p('yyyy', 'path', 'integer', 'Year.', { req: true }), p('mm', 'path', 'integer', 'Month.', { req: true }), p('dd', 'path', 'integer', 'Day.', { req: true })] },
+    { id: 'get-user-logs', method: 'GET', summary: 'Get user logs', path: '/channel/{name}/user/{user}', desc: 'One user in one channel, most recent month.', params: [p('name', 'path', 'string', 'The channel login.', { req: true }), p('user', 'path', 'string', 'The user login.', { req: true })] },
+    { id: 'search-user-logs', method: 'GET', summary: 'Search user logs', path: '/channel/{name}/user/{user}/search', desc: 'Everything a user said in a channel that matches.', params: [p('q', 'query', 'string', 'The text to find.', { req: true })] },
+    { id: 'random-line', method: 'GET', summary: 'Random channel line', path: '/channel/{name}/random', desc: 'One random message.', params: [p('name', 'path', 'string', 'The channel login.', { req: true })] },
+    { id: 'firehose', method: 'WS', summary: 'Firehose', path: '/firehose', desc: 'Every message as it arrives, over a WebSocket.', params: [] },
+  ]},
+  { id: 'users', title: 'Users', ops: [
+    { id: 'get-user', method: 'GET', summary: 'Get a user', path: '/user/{user}', desc: 'A user by login.', params: [p('user', 'path', 'string', 'The user login.', { req: true })] },
+    { id: 'get-user-stats', method: 'GET', summary: 'Get user stats', path: '/user/{user}/stats', desc: 'Message counts for a user.', params: [p('user', 'path', 'string', 'The user login.', { req: true })] },
+    { id: 'get-name-history', method: 'GET', summary: 'Get name history', path: '/userid/{id}/names', desc: 'Every login an id has had, with dates.', params: [p('id', 'path', 'string', 'The numeric user id.', { req: true })] },
+    { id: 'optout', method: 'POST', summary: 'Opt out', path: '/optout', desc: 'Stops a user being logged. Returns a code to send in chat.', params: [] },
+  ]},
+  { id: 'admin', title: 'Admin', ops: [
+    { id: 'admin-add-channels', method: 'POST', summary: 'Add channels', path: '/admin/channels', desc: 'Start logging channels.', auth: true, params: [p('X-Api-Key', 'header', 'string', 'The admin key.', { req: true })] },
+    { id: 'admin-remove-channels', method: 'DELETE', summary: 'Remove channels', path: '/admin/channels', desc: 'Stop logging channels. Logs already kept stay.', auth: true, params: [p('X-Api-Key', 'header', 'string', 'The admin key.', { req: true })] },
+    { id: 'get-version', method: 'GET', summary: 'Get version', path: '/version', desc: 'The running build.', params: [] },
+  ]},
+];
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const copyIcon = '<svg class="icon-copy" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7 3a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V7.414A2 2 0 0014.414 6L12 3.586A2 2 0 0010.586 3H7z"/><path d="M4 6.5a.75.75 0 00-.75.75V15A2.75 2.75 0 006 17.75h5.25a.75.75 0 000-1.5H6c-.69 0-1.25-.56-1.25-1.25V7.25A.75.75 0 004 6.5z"/></svg><svg class="icon-done" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0l-3.5-3.5a1 1 0 111.4-1.4l2.8 2.79 6.8-6.79a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>';
+const sample = (op, lang) => {
+  const url = HOST + op.path;
+  if (lang === 'curl') return `curl ${op.method === 'GET' ? '' : `-X ${op.method} `}"${url}"`;
+  if (lang === 'js') return `const res = await fetch("${url}"${op.method === 'GET' ? '' : `, { method: "${op.method}" }`});\nconst data = await res.json();`;
+  return `import requests\n\nres = requests.${op.method === 'GET' ? 'get' : op.method.toLowerCase()}("${url}")\ndata = res.json()`;
+};
+const paramRow = x => `<div class="param"><div class="param-sig"><code class="param-name">${esc(x.name)}</code><span class="param-type">${esc(x.type)}</span>${x.req ? '<span class="param-req">required</span>' : ''}${x.def ? `<span class="param-default">default <code>${esc(x.def)}</code></span>` : ''}</div><div class="param-desc">${esc(x.desc)}</div></div>`;
+const where = [['path', 'Path parameters'], ['query', 'Query parameters'], ['header', 'Headers']];
+
+let navHtml = '', bodyHtml = '';
+for (const g of SPEC) {
+  navHtml += `<div class="nav-group"><div class="nav-group-title">${esc(g.title)}</div>`;
+  bodyHtml += `<div class="op-group"><h2 class="op-group-title">${esc(g.title)}</h2>`;
+  for (const op of g.ops) {
+    const m = op.method.toLowerCase();
+    navHtml += `<a href="#${op.id}" class="nav-item" data-search="${esc(op.path)}"><span class="nav-method m-${m}">${op.method}</span><span class="nav-label">${esc(op.summary)}</span></a>`;
+    const params = where.map(([loc, title]) => {
+      const rows = op.params.filter(x => x.in === loc);
+      return rows.length ? `<div class="param-group"><div class="param-group-title">${title}</div>${rows.map(paramRow).join('')}</div>` : '';
+    }).join('');
+    bodyHtml += `<section class="op" id="${op.id}"><div class="op-main">
+      <div class="op-head"><span class="method m-${m}">${op.method}</span><h3 class="op-title">${esc(op.summary)}</h3>${op.auth ? '<span class="auth-chip" title="Needs an admin key">Restricted</span>' : ''}</div>
+      <div class="op-path"><span class="op-host">${HOST}</span>${esc(op.path)}</div>
+      <p class="op-desc">${esc(op.desc)}</p>${params}
+      <div class="param-group"><div class="param-group-title">Responses</div>
+        <div class="resp-row"><span class="status-pip ok"></span><code class="resp-code">200</code><span class="resp-desc">It worked.</span></div>
+        <div class="resp-row"><span class="status-pip err"></span><code class="resp-code">404</code><span class="resp-desc">Nothing by that name.</span></div>
+      </div></div>
+      <div class="op-aside"><div class="code-panel">
+        <div class="code-block"><div class="code-head"><div class="lang-tabs" role="tablist">${LANGS.map(([id, label]) => `<button type="button" class="lang-tab" role="tab" data-lang="${id}">${label}</button>`).join('')}</div><button type="button" class="code-copy" title="Copy request" aria-label="Copy request">${copyIcon}</button></div>
+          ${LANGS.map(([id]) => `<pre data-lang="${id}"><code>${esc(sample(op, id))}</code></pre>`).join('')}</div>
+        <div class="code-block"><div class="code-head"><div class="resp-head"><span class="status-pip ok"></span><span class="resp-status">200</span><span class="resp-type">application/json</span></div><button type="button" class="code-copy" title="Copy response" aria-label="Copy response">${copyIcon}</button></div>
+          <pre><code>${esc(JSON.stringify({ ok: true, id: op.id }, null, 2))}</code></pre></div>
+      </div></div></section>`;
+  }
+  navHtml += '</div>';
+  bodyHtml += '</div>';
+}
+document.querySelector('.nav-empty').insertAdjacentHTML('beforebegin', navHtml);
+document.getElementById('ops').innerHTML = bodyHtml;
+
+document.getElementById('theme').addEventListener('click', () => {
+  const light = document.documentElement.dataset.theme !== 'light';
+  if (light) document.documentElement.dataset.theme = 'light'; else delete document.documentElement.dataset.theme;
+  try { localStorage.setItem('cyexTheme', light ? 'light' : 'dark'); } catch (e) {}
+  document.querySelector('meta[name="theme-color"]').content = light ? '#f3f3f4' : '#1e1f23';
+});
+
+/* ---- cyex-docs/references/behaviour.js ---- */
+// cyex docs behaviour: scroll-spy, a sidebar that follows the reader both ways,
+// independent column scrolling, the Ctrl/Cmd+K filter, and shared code-sample tabs.
+// No framework. In Svelte, call initDocs() from an $effect (after the sections render)
+// and return the cleanup it gives back.
+//
+// Markup it expects (see the starter page):
+//   header.top                                  the sticky page header
+//   aside.docs-nav > .nav-search > input        the filter
+//   aside.docs-nav > nav.nav-scroll             the index; its own scroll container
+//     .nav-group > .nav-group-title + a.nav-item[href="#id"]
+//   section[id]                                 one per index entry, in the same order
+
+function initDocs(opts = {}) {
+  const HEADER_OFFSET = opts.headerOffset ?? 80; // matches section scroll-margin-top
+  const BAND = opts.band ?? [0.25, 0.6];          // the comfortable zone, as fractions of the rail
+  const PARK = opts.park ?? 0.35;                 // where an item is brought to when it leaves it
+  const LANG_KEY = opts.langKey ?? 'cyexDocsLang';
+
+  const header = document.querySelector('header.top');
+  const aside = document.querySelector('.docs-nav');
+  const nav = document.querySelector('.nav-scroll');
+  const search = document.querySelector('.nav-search');
+  const input = search?.querySelector('input');
+  const sections = [...document.querySelectorAll('section[id]')];
+  const items = new Map([...nav.querySelectorAll('a.nav-item')].map(a => [a.getAttribute('href').slice(1), a]));
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cleanups = [];
+  const on = (target, type, fn, options) => { target.addEventListener(type, fn, options); cleanups.push(() => target.removeEventListener(type, fn, options)); };
+
+  // The rail sits under the header, so it needs the header's real height.
+  const setHeaderHeight = () => document.documentElement.style.setProperty('--header-h', `${header?.offsetHeight ?? 62}px`);
+
+  // ---------- scroll-spy ----------
+  // Offsets are measured once (and again on resize) and compared with scrollY.
+  // An IntersectionObserver band thin enough for one section is thin enough for two
+  // to straddle it, and then it lights the section you are leaving.
+  let tops = [];
+  const measure = () => { tops = sections.map(s => ({ id: s.id, top: s.getBoundingClientRect().top + scrollY })); };
+
+  let activeId = null;
+  let edge = null; // 'top' | 'end' | null: the page is at one of its ends
+  let frame = 0;
+
+  function update() {
+    frame = 0;
+    if (!tops.length) return;
+    const atTop = scrollY <= 2;
+    const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+    let current = tops[0];
+    if (atEnd) current = tops[tops.length - 1]; // a short last section may never reach the header
+    else {
+      const y = scrollY + HEADER_OFFSET;
+      // Two pixels of slack: a hash jump parks a section exactly on the boundary.
+      for (const t of tops) { if (t.top <= y + 2) current = t; else break; }
+    }
+    const nextEdge = atTop ? 'top' : atEnd ? 'end' : null;
+    if (current.id !== activeId || nextEdge !== edge) {
+      setActive(current.id);
+      edge = nextEdge;
+      follow();
+    }
+  }
+  const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+  const onResize = () => { setHeaderHeight(); measure(); onScroll(); };
+
+  function setActive(id) {
+    if (id === activeId) return;
+    items.get(activeId)?.classList.remove('active');
+    items.get(activeId)?.removeAttribute('aria-current');
+    activeId = id;
+    items.get(id)?.classList.add('active');
+    items.get(id)?.setAttribute('aria-current', 'location');
+  }
+
+  // ---------- the rail follows, both ways ----------
+  // The lit item (with its group's heading when it leads the group) is kept inside a
+  // band around the middle of the rail, so the index travels with the reader going
+  // down exactly as it does going up. At the page's top the rail goes to its top; at
+  // the page's end, to its end. A rail the reader just scrolled by hand is left alone
+  // until the next change of section.
+  let railTouchedAt = 0;
+
+  function follow() {
+    if (!nav || getComputedStyle(aside).position !== 'sticky') return; // stacked layout: the rail isn't beside the text
+    if (performance.now() - railTouchedAt < 1200) return;
+    const max = nav.scrollHeight - nav.clientHeight;
+    if (max <= 0) return;
+
+    let target;
+    if (edge === 'top') target = 0;
+    else if (edge === 'end') target = max;
+    else {
+      const el = items.get(activeId);
+      if (!el || el.hidden) return;
+      const group = el.closest('.nav-group');
+      const leads = group && group.querySelector('.nav-item:not([hidden])') === el;
+      const anchor = (leads && group.querySelector('.nav-group-title')) || el;
+      const box = nav.getBoundingClientRect();
+      const h = nav.clientHeight;
+      const top = anchor.getBoundingClientRect().top - box.top;
+      const bottom = el.getBoundingClientRect().bottom - box.top;
+      if (top >= h * BAND[0] && bottom <= h * BAND[1]) return; // already comfortable
+      target = nav.scrollTop + top - h * PARK;
+    }
+    target = Math.max(0, Math.min(max, Math.round(target)));
+    if (Math.abs(target - nav.scrollTop) < 2) return;
+    nav.scrollTo({ top: target, behavior: reduced() ? 'auto' : 'smooth' });
+  }
+
+  // ---------- two columns, two scrolls ----------
+  // Whichever column the pointer is over is the one that moves. overscroll-behavior on
+  // the rail stops it handing the wheel to the page at its ends; this covers the parts
+  // that aren't scroll containers (search box, padding, a filtered-down short list).
+  on(aside, 'wheel', e => {
+    if (getComputedStyle(aside).position !== 'sticky') return;
+    railTouchedAt = performance.now();
+    if (!nav.contains(e.target)) { e.preventDefault(); return; }
+    const atTop = nav.scrollTop <= 0;
+    const atEnd = nav.scrollTop + nav.clientHeight >= nav.scrollHeight - 1;
+    if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atEnd)) e.preventDefault();
+  }, { passive: false });
+  on(nav, 'pointerdown', () => { railTouchedAt = performance.now(); });
+  on(nav, 'touchmove', () => { railTouchedAt = performance.now(); }, { passive: true });
+  // Picking an entry is a request to go there, not a manual scroll of the rail.
+  on(nav, 'click', e => { if (e.target.closest('a.nav-item')) railTouchedAt = 0; });
+
+  // ---------- filter ----------
+  if (input) {
+    const kbd = search.querySelector('.nav-kbd');
+    if (kbd) kbd.textContent = /Mac|iP(hone|ad|od)/.test(navigator.platform || navigator.userAgent) ? '⌘K' : 'Ctrl K';
+    const empty = nav.querySelector('.nav-empty');
+    const apply = () => {
+      const q = input.value.trim().toLowerCase();
+      search.classList.toggle('has-value', !!input.value);
+      let any = false;
+      // Entries match on their own text (label, method, path); a group heading never
+      // matches by itself, so "admin" finds admin endpoints by their own names.
+      for (const group of nav.querySelectorAll('.nav-group')) {
+        let shown = 0;
+        for (const a of group.querySelectorAll('.nav-item')) {
+          const hit = !q || (a.textContent + ' ' + (a.dataset.search ?? '')).toLowerCase().includes(q);
+          a.hidden = !hit;
+          if (hit) shown++;
+        }
+        group.hidden = !shown;
+        if (shown) any = true;
+      }
+      if (empty) { empty.hidden = any; empty.textContent = `Nothing matches “${input.value.trim()}”.`; }
+    };
+    on(input, 'input', apply);
+    search.querySelector('.input-clear')?.addEventListener('click', () => { input.value = ''; apply(); input.focus(); });
+    on(document, 'keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); input.focus(); input.select(); }
+      else if (e.key === 'Escape' && document.activeElement === input) { input.value = ''; apply(); input.blur(); }
+    });
+  }
+
+  // ---------- code samples ----------
+  // One language choice for the whole page, remembered: picking Python once shouldn't
+  // mean picking it again on the next endpoint.
+  const setLang = lang => {
+    for (const tab of document.querySelectorAll('.lang-tab')) tab.setAttribute('aria-selected', String(tab.dataset.lang === lang));
+    for (const pre of document.querySelectorAll('pre[data-lang]')) pre.hidden = pre.dataset.lang !== lang;
+  };
+  let lang = document.querySelector('.lang-tab')?.dataset.lang;
+  try { const saved = localStorage.getItem(LANG_KEY); if (saved && document.querySelector(`.lang-tab[data-lang="${saved}"]`)) lang = saved; } catch {}
+  if (lang) setLang(lang);
+  on(document, 'click', e => {
+    const tab = e.target.closest('.lang-tab');
+    if (tab) { setLang(tab.dataset.lang); try { localStorage.setItem(LANG_KEY, tab.dataset.lang); } catch {} return; }
+    const copy = e.target.closest('.code-copy');
+    if (!copy) return;
+    const pre = [...copy.closest('.code-block').querySelectorAll('pre')].find(p => !p.hidden);
+    navigator.clipboard?.writeText(pre.textContent).then(() => {
+      copy.classList.add('copied');
+      clearTimeout(copy._t);
+      copy._t = setTimeout(() => copy.classList.remove('copied'), 1600);
+    }).catch(() => {});
+  });
+
+  // ---------- start ----------
+  setHeaderHeight();
+  measure();
+  const hash = decodeURIComponent(location.hash.slice(1));
+  if (items.has(hash)) setActive(hash); // a deep link lights its entry before any scrolling
+  update();
+  on(window, 'scroll', onScroll, { passive: true });
+  on(window, 'resize', onResize);
+  // Sections change height as fonts land and samples fill in; cached offsets go stale.
+  // The header is watched too: it wraps to more lines on narrow screens.
+  const ro = new ResizeObserver(onResize);
+  ro.observe(document.body);
+  if (header) ro.observe(header);
+  cleanups.push(() => ro.disconnect(), () => frame && cancelAnimationFrame(frame));
+
+  return () => cleanups.forEach(fn => fn());
+}
+
+initDocs();
+</script>
+</body>
+</html>
