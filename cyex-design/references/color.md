@@ -15,6 +15,8 @@ The accent tokens below are identical on every cyex surface. The page grounds an
 | `--accent-border` | `rgba(20,90,255,.55)` | `rgba(4,106,130,.4)` | Focused field border, web-tool focus ring |
 | `--accent-glow` (web only) | `rgb(20 90 255 / .35)` | `rgb(20 230 255 / .4)` | Primary-button shadow, hero glow, live dot |
 
+Dark `--dim` is `#9fa1a9`: 4,65:1 or better on every dark surface up to `--elevated-2`, 5,09:1 on `--elevated`, still dimmer than `--muted` `#b4b5bb`. Light `--dim` is `#6b6d76`.
+
 Note the light tints (`dim`, `wash`, `border`) are built from the dark teal `#046a82`, not from the cyan: cyan tints vanish on white.
 
 ### Where the accent goes, and where it doesn't
