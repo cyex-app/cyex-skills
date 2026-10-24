@@ -28,8 +28,9 @@ Copy is written like a person wrote it, not a template. Plain, concrete, checked
 |---|---|---|
 | Thousands | dot groups | `40.000`, `1.000.000` |
 | Decimals | comma | `1,5 MB`, `0,4 s` |
-| Short numbers | comma, rounded down | `1,2K`, `3,4M` |
-| Units | space before | `150 MB`, `<2 %` |
+| Short numbers (views, viewers, followers) | comma, at most one decimal, rounded down, no space before K/M/B | `1,4K`, `42,1K`, `2M` |
+| Units | space before | `150 MB`, `<2 %`, `1,2 s` |
+| Measured durations (latency, buffer) | number, space, unit | `1,2 s`, `350 ms` |
 | Dates | `yyyy/mm/dd` | `2026/10/23` |
 | Times | 24-hour | `18:05` |
 
