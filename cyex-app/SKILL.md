@@ -24,7 +24,7 @@ The look of cyex deck and cyex logs: one flat warm-grey ground, opaque surfaces 
 | Field | 30px, `0 10px` | `11px 12px`, .89rem |
 | Header controls | 30px icon buttons, 38px title bar | 37px toggles and switches |
 | Cards and panels | 3px radius, `--border` hairline | **0 radius** (square), `--border` hairline |
-| Page | fills the window; scrolling happens inside panes | max 1520px (viewer), 680px (forms), `padding: 26px 20px 60px` |
+| Page | fills the window; scrolling happens inside panes | the shared `.wrap` (1520px, 20px sides) for header, main and footer; forms and single tasks capped at `--measure-form` (640px) inside it; `main` padding `26px var(--page-pad) 60px` |
 | Toasts | top centre, under the title bar | bottom right (notices), bottom left (errors) |
 
 Everything else (palette, type families, radius of controls, motion, focus, voice) is identical.

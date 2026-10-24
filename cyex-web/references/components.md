@@ -17,7 +17,7 @@ Fixed, 64px, transparent at the top, glass once scrolled. The bar never changes 
 ```css
 .nav { position: fixed; inset: 0 0 auto; z-index: 50; height: var(--nav-h);
   display: flex; align-items: center; gap: 28px;
-  padding: 0 max(var(--gutter), (100% - 1200px) / 2);
+  padding: 0 max(var(--page-pad), (100% - var(--page-max)) / 2 + var(--page-pad)); /* lines up with .page */
   transition: background-color var(--dur-move); }
 .nav.scrolled { background: color-mix(in srgb, var(--bg) 78%, transparent);
   backdrop-filter: blur(14px) saturate(1.4); }

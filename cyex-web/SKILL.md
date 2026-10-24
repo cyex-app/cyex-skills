@@ -56,7 +56,7 @@ The look of the cyex hub: a near-black ground, neutral greys, one blue accent ke
 
 ## Layout
 
-- Page width `--page` (1200px max with fluid `--gutter`). Nav is 64px tall.
+- Page width: the shared cyex wrapper from `cyex-design`, 1520px with 20px sides (`--page-max`, `--page-pad`); `.page` is its 1480px content column, `.wrap` the padded wrapper. Headlines and leads keep their own measures (16ch, 44ch), so wide screens get more room around the copy, not longer lines. Nav is 64px tall.
 - Every section has `padding-top: var(--section-pad)`; the last one also gets bottom padding.
 - Two-column sections use unequal `minmax(0, …fr)` columns (e.g. `.85fr / 1.15fr` copy beside a mount) with `gap: 40px 72px`, and stack below 900px.
 - Breakpoints: 900 (two columns → one), 720 (nav folds into a menu), 520/480 (button rows become full-width grids).

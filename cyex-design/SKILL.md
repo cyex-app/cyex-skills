@@ -48,6 +48,26 @@ When a project's own `CLAUDE.md` is more specific than these skills, follow the 
 </script>
 ```
 
+## Page width (all web surfaces)
+
+One wrapper for every cyex web page, taken from cyex logs: the header, the content and the footer all line up on the same 1520px column, so moving between pages (or products) never shifts the edges.
+
+```css
+:root {
+  --page-max: 1520px;   /* the wrapper, padding included */
+  --page-pad: 20px;     /* side padding, the same at every width */
+  --measure: 820px;     /* prose: guides, docs text, long descriptions */
+  --measure-form: 640px;/* single-task pages: a form, an opt-out, a request */
+}
+html { scrollbar-gutter: stable; } /* pages with and without a scrollbar centre on the same column */
+.wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--page-pad); }
+```
+
+- Every full-width band (sticky header, main, footer) puts its content in `.wrap`; the band's background can run edge to edge, its content can't.
+- Narrower content sits **inside** the wrapper, left-aligned or centred, never as a different wrapper: prose capped at `--measure`, single-task pages at `--measure-form`, dialogs at 720px.
+- The content column is 1480px at most (1520 minus 2 × 20). Use `box-sizing: border-box` everywhere so that holds.
+- The desktop app fills its window instead; this applies to web pages.
+
 ## Accessibility floors (all surfaces)
 
 - Text contrast ≥ 4.5:1, large text and UI parts ≥ 3:1, in **both** themes. The secondary-text tokens were tuned for this; don't lighten them.

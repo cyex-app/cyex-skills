@@ -47,9 +47,13 @@
   --radius-l: 18px;
   --radius-in: calc(var(--radius-l) - 8px); /* a picture's corner inside a mount */
 
-  /* Layout */
-  --gutter: clamp(18px, 4vw, 40px);
-  --page: min(1200px, 100% - 2 * var(--gutter));
+  /* Layout: the shared cyex page wrapper (cyex-design), 1520px with 20px sides. */
+  --page-max: 1520px;
+  --page-pad: 20px;
+  --measure: 820px;
+  --measure-form: 640px;
+  --gutter: var(--page-pad);
+  --page: min(var(--page-max) - 2 * var(--page-pad), 100% - 2 * var(--page-pad)); /* the content column */
   --nav-h: 64px;
   --section-pad: clamp(88px, 12vw, 168px);
 
@@ -91,7 +95,7 @@
 @font-face { font-family: 'Geist Fallback'; font-weight: 600; src: local('Arial Bold'), local('Arial-BoldMT'); size-adjust: 99.7%; ascent-override: 100.71%; descent-override: 29.91%; line-gap-override: 0%; }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { background: var(--bg); scroll-padding-top: calc(var(--nav-h) + 16px); -webkit-text-size-adjust: 100%; }
+html { background: var(--bg); scroll-padding-top: calc(var(--nav-h) + 16px); -webkit-text-size-adjust: 100%; scrollbar-gutter: stable; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 body {
   margin: 0;
@@ -109,6 +113,7 @@ a { color: inherit; text-decoration: none; }
 [tabindex="-1"]:focus { outline: none; }
 
 .page { width: var(--page); margin-inline: auto; }
+.wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--page-pad); }
 .section { padding-top: var(--section-pad); }
 
 @media (prefers-reduced-motion: reduce) {
